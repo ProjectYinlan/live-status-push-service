@@ -2,6 +2,13 @@
  * 直播状态推送服务
  */
 
-require('./mqtt');
-require('./redis').connect();
-require('./controller').init();
+async function main() {
+
+    await require('./mongo').connect();
+    await require('./redis').connect();
+    require('./ws');
+    await require('./controller').init();
+
+}
+
+main();

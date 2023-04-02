@@ -35,6 +35,7 @@ module.exports = {
 
     /**
      * 获取当前直播中的订阅列表
+     * @returns {Array}
      */
     async getOnlineSubList() {
 
@@ -48,9 +49,22 @@ module.exports = {
             throw new Error;
         }
 
-        console.log(r);
+        if (!r.data.items) return null;
 
-        return r.data.items;
+        const roomidReg = /https:\/\/live\.bilibili\.com\/(\d+)\?.+/;
+
+        return r.data.items.map(e => {
+            const roomid = parseInt(roomidReg.exec(e.link)[1]);
+            return {
+                status: "online",
+                uid: e.uid,
+                roomid,
+                roomUrl: `https://live.bilibili.com/${roomid}`,
+                username: e.uname,
+                title: e.title,
+                avatarUrl: e.face
+            }
+        });
 
     },
 
@@ -84,11 +98,27 @@ module.exports = {
     },
 
     /**
+     * 通过uid获取用户昵称
+     * @param {Number} uid
+     * @return {Number}
+     */
+    async getUsernameByUid(uid) {
+
+        let r = await axios({
+            url: `https://api.bilibili.com/x/space/acc/info?mid=${uid}`,
+            method: 'get'
+        }).then(a => a.data);
+
+        return r.data.name;
+
+    },
+
+     /**
      * 通过房间id获取uid
      * @param {Number} roomid
      * @return {Number}
      */
-    async getUidByRoomid(roomid) {
+    async getRoomInfoByRoomid(roomid) {
 
         let r = await axios({
             url: `https://api.live.bilibili.com/room/v1/Room/get_info?room_id=${roomid}`,
@@ -97,22 +127,7 @@ module.exports = {
 
         if (r.code != 0) throw new Error(r.msg);
 
-        return r.data.uid;
-    },
-
-    /**
-     * 通过uid获取用户昵称
-     * @param {Number} uid
-     * @return {Number}
-     */
-    async getUsernameByUid(uid) {
-        
-        let r = await axios({
-            url: `https://api.bilibili.com/x/space/acc/info?mid=${uid}`,
-            method: 'get'
-        }).then(a => a.data);
-
-        return r.data.name;
+        return r.data;
 
     }
 }

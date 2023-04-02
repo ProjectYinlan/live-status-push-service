@@ -20,30 +20,50 @@
 
 下播事件触发后，消抖参数归 0
 
-## topic 说明
+## payload
 
-### topic
+### 客户端上线
 
-| topic | 作用 |
-| :---  | :-- |
-| livepush/subscirbe | 关注新的 up |
-| livepush/liveroom | 上下播事件 |
-| livepush/status | 各端上下线事件 |
-
-### payload
-
-#### livepush/subscirbe
-
-operate
+online
 
 ```json
 {
-    "type": "operate",
+    "type": "online",
     "data": {
-        "uid": 12583120,    // uid || roomid 二选一
+        "nodeId": 2811520355,   // 节点 id
+        "groupList": [
+            111,
+            222
+        ]
+    }
+}
+```
+
+### 群变更
+
+groupChange
+
+```json
+{
+    "type": "groupChange",
+    "data": {
+        "type": "join | quit",
+        "group": 111
+    }
+}
+```
+
+### 订阅
+
+subscribe
+
+```json
+{
+    "type": "subscribe",
+    "data": {
+        "uid": 12583120,        // uid || roomid 二选一
         "roomid": 1064790
-    },
-    "ots": 1600000000       // 事件识别码
+    }
 }
 ```
 
@@ -57,28 +77,34 @@ result
     "data": {               // 用户信息
         "uid": 12583120,
         "username": "霜叶的玖叁"
-    },
-    "ots": 1600000000       // 事件识别码
+    }
 }
 ```
 
-#### livepush/liveroom
+### 推送
 
 online
 
 ```json
 {
-    "type": "online",
+    "type": "push",
     "data": {
+        "status": "online",
         "uid": 12583120,
         "roomid": 1064790,
+        "roomUrl": "https://live.bilibili.com/1064790",
         "username": "霜叶的玖叁",
-        "title": "",
-        "roomUrl": "",
-        "avatarUrl": "",
-        "roomCardUrl": "",
-        "onlineTime": 1600000000,
-        "onlineTimeStr": ""
+        "title": "测试",
+        "avatar": "https://i1.hdslb.com/bfs/face/ea84644c16e0ae94020121bbaa0d6a69ab39daf3.jpg",
+        "coverUrl": "https://i0.hdslb.com/bfs/live/new_room_cover/462f98c2bcb6a0426cb8eb3ecb9645b73e33466a.jpg",
+        "startTime": 1680417040000,
+        "startTimeStr": "14:30:40",
+        "groupList": [
+            {
+                "id": 111,
+                "atAll": false
+            }
+        ]
     }
 }
 ```
@@ -87,17 +113,26 @@ offline
 
 ```json
 {
-    "type": "offline",
+    "type": "push",
     "data": {
+        "status": "offline",
         "uid": 12583120,
         "roomid": 1064790,
+        "roomUrl": "https://live.bilibili.com/1064790",
         "username": "霜叶的玖叁",
-        "durationTime": 1600000000,
-        "durationTimeStr": ""
+        "title": "测试",
+        "avatar": "https://i1.hdslb.com/bfs/face/ea84644c16e0ae94020121bbaa0d6a69ab39daf3.jpg",
+        "coverUrl": "https://i0.hdslb.com/bfs/live/new_room_cover/462f98c2bcb6a0426cb8eb3ecb9645b73e33466a.jpg",
+        "startTime": 1680417040000,
+        "startTimeStr": "14:30:40",
+        "durationTime": 98993,
+        "durationTimeStr": "2 分钟",
+        "groupList": [
+            {
+                "id": 111,
+                "atAll": false
+            }
+        ]
     }
 }
 ```
-
-#### livepush/status
-
-> todo
