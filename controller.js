@@ -36,7 +36,7 @@ module.exports = {
 
         ws.on('connection', (socket) => {
 
-            console.log("ws", "客户端连接");
+            console.log("ws", "节点连接");
 
             socket.on('message', (data) => {
 
@@ -47,8 +47,6 @@ module.exports = {
                 }
 
                 if (!data.type) return;
-
-                console.log(tag, data);
 
                 switch (data.type) {
 
@@ -73,11 +71,13 @@ module.exports = {
 
             })
 
+            socket.on('close', () => {
+                console.log(socket.nodeId, "节点已注销");
+                delete global.nodes[socket.nodeId];
+            })
+
         })
 
-        ws.on('close', (socket) => {
-            delete global.nodes[socket.nodeId];
-        })
 
         console.log(intervalTag, `初始化: ${config.interval} ms`);
         setInterval(updateStatusInterval, config.interval);
@@ -128,6 +128,8 @@ async function onlineHandler(payload, socket) {
         socket,
         groupList
     }
+
+    console.log(nodeId, `节点已注册，群数: ${groupList.length}`)
 
 }
 
@@ -241,12 +243,11 @@ async function updateStatusInterval() {
     })
     let oldListRoomids = Object.keys(oldList).filter(e => oldList[e].status == 'online').map(e => parseInt(e));
 
-    // console.log("old", oldListRoomids);
-    // console.log("new", newListRoomids);
-
     // 新上播
     let newOnline = newListRoomids.filter(roomid => !oldListRoomids.includes(roomid));
     newOnline.forEach(async roomid => {
+
+        console.log(tag, "新上播", roomid);
 
         // 获取直播间信息
         let infoObj = newList.find(item => item.roomid == roomid);
@@ -315,6 +316,8 @@ async function updateStatusInterval() {
             return;
         }
 
+        console.log(tag, "新下播", roomid);
+
         // 获取直播间信息
         let infoObj = oldList[roomid];
 
@@ -368,7 +371,5 @@ async function updateStatusInterval() {
         })
 
     })
-    // console.log("newOnline", newOnline);
-    // console.log("newOffline", newOnline);
 
 }
