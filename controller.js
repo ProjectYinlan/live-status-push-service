@@ -311,7 +311,7 @@ async function updateStatusInterval() {
         // 判断消抖参数
         const count = await redis.get(`livepush:count:offline:${roomid}`);
 
-        if (count < 5) {
+        if (count != 5) {
             await redis.incr(`livepush:count:offline:${roomid}`);
             return;
         }
